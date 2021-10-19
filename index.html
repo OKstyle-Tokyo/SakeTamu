@@ -16,50 +16,97 @@
 // 情報元： https://shimz.me/blog/microbit/5456
 var bluetoothDevice;
 var characteristic;
-//micro:bit BLE UUID
-var LED_SERVICE_UUID                        = 'e95dd91d-251d-470a-a062-fa1922dfa9a8';
-var LED_TEXT_CHARACTERISTIC_UUID            = 'e95d93ee-251d-470a-a062-fa1922dfa9a8';
+//注意：1.ハイフンは必要なので省略しないこと
+//     2.小文字で記述しないとうまくいかない場合があるので気をつけること
+// Service UUID
+var SERVICE_UUID        = 'a6ad91bd-376e-465f-8c6c-460fd3e15038';
+
+// Characteristic UUID
+var CHARACTERISTIC_UUID = '80d881a6-1ab3-47f0-8c75-2c31eac31f43';
 
 //ボタンイベントリスナー
 d3.select("#connect").on("click", connect);
 d3.select("#disconnect").on("click", disconnect);
 d3.select("#send").on("click", sendMessage);
 
-//micro:bitに接続する
+//PSoCに接続する
 function connect() {
   let options = {};
-
-  //options.acceptAllDevices = true;
+  // 全てのBLEデバイスをスキャン対象とする場合はtrue
+  // フィルタリングしたい場合はfalse
+  options.acceptAllDevices = true;
+  // デバイス名のプレフィックス, ServiceのUUID
   options.filters = [
-    {services: [LED_SERVICE_UUID]},
-    {namePrefix: "BBC micro:bit"}
+    {services: [SERVICE_UUID]},
+    {namePrefix: "SAKETAMU"}
   ];
-
+  // 接続するService '利用するServiceのUniform Type Identifierを予め指定する'
+  //,
+  //optionalServices: [SERVICE_UUID];
+  
+  // BLEデバイスをScan
   navigator.bluetooth.requestDevice(options)
   .then(device => {
     bluetoothDevice = device;
     console.log("device", device);
+    //デバイスに接続
     return device.gatt.connect();
   })
   .then(server =>{
     console.log("server", server)
-    return server.getPrimaryService(LED_SERVICE_UUID);
+    // Service取得
+    return server.getPrimaryService(SERVICE_UUID);
   })
   .then(service => {
     console.log("service", service)
-    return service.getCharacteristic(LED_TEXT_CHARACTERISTIC_UUID)
+    // Characteristic取得
+    return service.getCharacteristic(CHARACTERISTIC_UUID)
   })
   .then(chara => {
     console.log("characteristic", chara)
     alert("BLE接続が完了しました。");
     characteristic = chara;
+    // characteristicに対してRead/Write/Notificationsの処理を記述
+    characteristic.readValue()
+      .then(response => {
+      // データがStringの場合
+      //const decoder = new TextDecoder('utf-8')
+      //const str = decoder.decode(response)
+      //console.log(str)
+
+      // データがnumberの場合
+      const num = getUintN(response)
+      console.log(num)
+    })
+    .catch(error => console.error(error))
+
+    // 数値変換
+    const getUintN = (dataView) => {
+      switch(dataView.byteLength) {
+        case 0:
+          return 0
+        case 1:
+          return dataView.getUint8(0)
+        case 2:
+         return dataView.getUint16(0)
+        case 4:
+          return dataView.getUint32(0)
+       case 8: {
+         const top = dataView.getUint32(0) * Math.pow(2, 32)
+          const bottom = dataView.getUint32(4)
+          return top + bottom
+        }
+        default:
+          return 0
+      }
+    }
   })
   .catch(error => {
     console.log(error);
   });
 }
 
-//LEDに表示するメッセージを送信
+//ペリフェラルへメッセージを送信
 function sendMessage() {
   if (!bluetoothDevice || !bluetoothDevice.gatt.connected || !characteristic) return ;
   var text = document.querySelector("#message").value;
