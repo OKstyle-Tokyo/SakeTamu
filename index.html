@@ -35,9 +35,10 @@ function connect() {
   // 全てのBLEデバイスをスキャン対象とする場合はtrue
   // フィルタリングしたい場合はfalse
   options.acceptAllDevices = true;
-  // デバイス名のプレフィックス, ServiceのUUID
+  // デバイス名、デバイス名のプレフィックス, ServiceのUUID　すべてを満たすではなく、各々に該当するデバイスをフィルタ・表示
   options.filters = [
     {services: [SERVICE_UUID]},
+    {name: "SAKETAMU"},
     {namePrefix: "SAKETAMU"}
   ];
   // 接続するService '利用するServiceのUniform Type Identifierを予め指定する'
