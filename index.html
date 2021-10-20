@@ -37,7 +37,7 @@ function connect() {
   options.acceptAllDevices = true;
   // デバイス名、デバイス名のプレフィックス, ServiceのUUID　すべてを満たすではなく、各々に該当するデバイスをフィルタ・表示
   options.filters = [
-    {services: [SERVICE_UUID]},
+    //{services: [SERVICE_UUID]},
     {name: "SAKETAMU"},
     {namePrefix: "SAKETAMU"}
   ];
