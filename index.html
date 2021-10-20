@@ -11,6 +11,7 @@
     <h1>SakeTamu</h1>
     <button onclick="onStartButtonClick()">接続</button>
     <br />
+    <!--
     <script>
       var ChromeSamples = {
         log: function() {
@@ -38,6 +39,7 @@
           }
         };
       </script>
+      -->
     <h3>Live Output</h3>
     <div id="output" class="output">
     <div id="content"></div>
@@ -55,21 +57,21 @@
 
       async function onStartButtonClick() {
         try {
-          log("Requesting Bluetooth Device...");
+          console.log("Requesting Bluetooth Device...");
           const device = await navigator.bluetooth.requestDevice({
             filters: [{ namePrefix: "SAKETAMU" }],
             optionalServices: [UUID_1],
           });
-          log("Connecting to GATT Server...");
+          console.log("Connecting to GATT Server...");
           const server = await device.gatt.connect();
-          log("Getting Service...");
+          console.log("Getting Service...");
           const service = await server.getPrimaryService(UUID_1);
-          log("Getting Characteristic...");
+          console.log("Getting Characteristic...");
           characteristic = await service.getCharacteristic(UUID_2);
-          log("characteristic OK!!")
+          console.log("characteristic OK!!")
           alert("BLE接続が完了しました。");
         } catch (error) {
-          log("Argh! " + error);
+          console.log("Argh! " + error);
         }
       }
     </script>
