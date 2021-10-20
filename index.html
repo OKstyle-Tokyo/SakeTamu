@@ -28,21 +28,21 @@
 
       async function onStartButtonClick() {
         try {
-          console.log("Requesting Bluetooth Device...");
+          log("Requesting Bluetooth Device...");
           const device = await navigator.bluetooth.requestDevice({
             filters: [{ namePrefix: "SAKETAMU" }],
             optionalServices: [UUID_1],
           });
           console.log("Connecting to GATT Server...");
           const server = await device.gatt.connect();
-          console.log("Getting Service...");
+          log("Getting Service...");
           const service = await server.getPrimaryService(UUID_1);
-          console.log("Getting Characteristic...");
+          log("Getting Characteristic...");
           characteristic = await service.getCharacteristic(UUID_2);
-          console.log("characteristic OK!!")
+          log("characteristic OK!!")
           alert("BLE接続が完了しました。");
         } catch (error) {
-          console.log("Argh! " + error);
+          log("Argh! " + error);
         }
       }
     </script>
