@@ -1,106 +1,47 @@
-<!doctype html>
-<!--
-Copyright 2017 Analog Devices, Inc & JellyWare Inc.
--->
+<!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UIFlow と BLE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0/dist/chartjs-plugin-streaming.min.js"></script>
+  </head>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Web Bluetooth API Sample">
-    <meta name="viewport" content="width=640, maximum-scale=1.0, user-scalable=yes">
-    <title>BlueJelly</title>
-    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="bluejelly.js"></script>
-</head>
+  <body>
+    <h1>UIFlow と BLE ＋ グラフ描画</h1>
+    <button onclick="onStartButtonClick()">接続</button>
+    <br />
+    <canvas id="myChart"></canvas>
 
-<body>
-    <div class="container">
-        <div class="title margin">
-            <p id="title">Web Bluetooth API Sample</p>
-            <p id="subtitle">#01 BatteryLevelの読み込み</p>
-        </div>
-        <div class="contents margin">
-            <button id="readData" class="button">Read</button>
-            <button id="reset" class="button">Reset</button>
+    <script> //参考：https://qiita.com/youtoy/items/3da58570972803134f6c
+      const UUID_1 = "a6ad91bd-376e-465f-8c6c-460fd3e15038"; // Service
+      const UUID_2 = "80d881a6-1ab3-47f0-8c75-2c31eac31f43"; // Characteristic
+      const UUID_3 = "c3266f2b-8e00-485e-a75b-6a0685f9c74b"; // Descriptor
 
-            <hr>
+      let bluetoothDevice;
+      let characteristic;
 
-            <div id="device_name">xxxx</div>
-            <div id="data_text">xxxx</div>
-
-
-        </div>
-        <div class="footer margin">
-          &copy; 2017 <a href="http://www.analog.com/jp/" target="_blank">Analog Devices, Inc</a> & <a href="http://jellyware.jp/" target="_blank">JellyWare Inc.</a> All Rights Reserved
-        </div>
-    </div>
-    <script>
-        //--------------------------------------------------
-        //Global変数
-        //--------------------------------------------------
-        //BlueJellyのインスタンス生成
-        var ble = new BlueJelly();
-
-
-        //-------------------------------------------------
-        //ボタンが押された時のイベント登録
-        //--------------------------------------------------
-        document.getElementById('readData').addEventListener('click', function() {
-            ble.read('SAKETAMU');
-        });
-
-        document.getElementById('reset').addEventListener('click', function() {
-            ble.reset(); //reset is disconnect & clear
-        });
-
-
-        //--------------------------------------------------
-        //ロード時の処理
-        //--------------------------------------------------
-        window.onload = function() {
-            //初期の文字列表示
-            document.getElementById('device_name').innerHTML = "No Device";
-            document.getElementById('data_text').innerHTML = "No Data"
-
-            //UUIDの設定
-            ble.setUUID("SAKETAMU", "A6AD91BD-376E-465F-8C6C-460FD3E15038", "80D881A6-1AB3-47F0-8C75-2C31EAC31F43");
+      async function onStartButtonClick() {
+        try {
+          console.log("Requesting Bluetooth Device...");
+          const device = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: "SAKETAMU" }],
+            optionalServices: [UUID_1],
+          });
+          console.log("Connecting to GATT Server...");
+          const server = await device.gatt.connect();
+          console.log("Getting Service...");
+          const service = await server.getPrimaryService(UUID_1);
+          console.log("Getting Characteristic...");
+          characteristic = await service.getCharacteristic(UUID_2);
+          console.log("characteristic OK!!")
+          alert("BLE接続が完了しました。");
+        } catch (error) {
+          console.log("Argh! " + error);
         }
-
-
-        //--------------------------------------------------
-        //Scan後の処理
-        //--------------------------------------------------
-        ble.onScan = function(deviceName) {
-            //HTMLに表示
-            document.getElementById('device_name').innerHTML = deviceName;
-        }
-
-
-        //--------------------------------------------------
-        //Read後の処理：得られたデータの表示など行う
-        //--------------------------------------------------
-        ble.onRead = function(data, uuid) {
-            //フォーマットに従って値を取得
-            value = data.getUint8(0); //1Byteの場合のフォーマット
-
-            //HTMLに値を表示
-            document.getElementById('data_text').innerHTML = value;
-
-            //再びRead
-            ble.read('SAKETAMU');
-        }
-
-
-        //--------------------------------------------------
-        //Reset後の処理
-        //--------------------------------------------------
-        ble.onReset = function() {
-            //HTMLに表示
-            document.getElementById('device_name').innerHTML = "No Device";
-        }
+      }
     </script>
-</body>
-
+  </body>
 </html>
