@@ -55,12 +55,12 @@
 
       async function onStartButtonClick() {
         try {
-          console.log("Requesting Bluetooth Device...");
+          log("Requesting Bluetooth Device...");
           const device = await navigator.bluetooth.requestDevice({
             filters: [{ namePrefix: "SAKETAMU" }],
             optionalServices: [UUID_1],
           });
-          console.log("Connecting to GATT Server...");
+          log("Connecting to GATT Server...");
           const server = await device.gatt.connect();
           log("Getting Service...");
           const service = await server.getPrimaryService(UUID_1);
