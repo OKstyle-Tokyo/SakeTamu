@@ -252,3 +252,11 @@ BlueJelly.prototype.reset= function() {
   this.clear();
   this.onReset();
 }
+
+//--------------------------------------------------
+//SensorTag UUID(class constant)
+//--------------------------------------------------
+Object.defineProperty(BlueJelly, 'SERVICE_UUID', {value: "a6ad91bd-376e-465f-8c6c-460fd3e15038", writable: false});
+Object.defineProperty(BlueJelly, 'CHARACTERISTICS_CHAR_DATA', {value: "80d881a6-1ab3-47f0-8c75-2c31eac31f43", writable: false});
+Object.defineProperty(BlueJelly, 'CHARACTERISTICS_CHAR_ENABLE', {value: "f000aa02-0451-4000-b000-000000000000", writable: false});
+Object.defineProperty(BlueJelly, 'CHARACTERISTICS_CHAR_PERIOD', {value: "f000aa03-0451-4000-b000-000000000000", writable: false});
