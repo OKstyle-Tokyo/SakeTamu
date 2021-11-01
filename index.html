@@ -121,11 +121,14 @@ Copyright 2021 Analog Devices, YaoyorozTech.Ltd
         ble.onRead = function (data, uuid){
           //フォーマットに従って値を取得
           value = data.getUint8(0) // 255.0; //8bitの場合のフォーマット
+            
+          //数値化
+          value = Number(value);
            
           //コンソールに値を表示
           console.log(value);
 
-          valuelength = value.byteLength    //データの長さを取得
+          valuelength = data.byteLength    //データの長さを取得
           console.log(valuelength);
  
           //HTMLにデータを表示
