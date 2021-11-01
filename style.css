@@ -128,7 +128,11 @@ hr{
   font-weight: 300;
 }
 
-
+#byteLength{
+  color:#009FBD;
+  font-size:14px;
+  font-weight: 300;
+}
 
 a { text-decoration: none; }
 a:link { color: #9a9a9a; }
